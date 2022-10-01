@@ -1,4 +1,4 @@
-# Music-Recommendation
+# Music-Similarity-Analysis
 A Deep Learning algorithm for music recommentation based on a user's input track
 
 ## Team
