@@ -1,7 +1,5 @@
 import librosa, librosa.display
 import numpy as np
-import matplotlib.pyplot as plt
-#%matplotlib inline
 import os, glob
 import json
 import math
