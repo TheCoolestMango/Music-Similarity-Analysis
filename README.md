@@ -14,12 +14,21 @@ The algorithm requires a data-set of different music compositions of different g
 ### Expectation
 The implemented model should be capable of finding tracks similar to a couple of liked tracks.
 
+# Prerequisites
+The algorithm is implemented in Python v3. Installation instruction can be found [here](https://www.python.org/downloads/)
+Further libraries can be installed using ```pip```. Pip installation instruction can be found [here](https://pip.pypa.io/en/stable/installation/)
+## Libraries
+The following libraries are required to run code:
+* Librosa: ```pip install librosa```
+* Numpy: ``` pip install numpy```
+
 # Sprint 1
 ## Preprocessing
 ### Implemented by Elizaveta Kovanova
 A python script ```sound-to-spec.py``` performs preprocessing:
- * All sample tracks are converted to mel-spectrograms
- * Added to the .json file, sorted by genres and labeled by genre-index
+ * All sample tracks are divided by segments
+ * Each segment is converted to a mel-spectrogram and added to dictionary
+ * Resulting database is added to the .json file, sorted by genres and labeled by genre-index
 
-Required data (1000 tracks of different genres) can be found and downloaded from [here](https://drive.google.com/drive/folders/15l6HypCKKLkd7Kl9SQzOHt90uZ0J01Y9?usp=sharing)
+Required data (1000 tracks of different genres) can be found and downloaded from [here](https://drive.google.com/drive/folders/15l6HypCKKLkd7Kl9SQzOHt90uZ0J01Y9?usp=sharing)\\
 Created dataset was uploaded to [GoogleDrive](https://drive.google.com/drive/folders/1JFRL-0wX8s20UJdJ98LvnZHj1ftAQd-l)
