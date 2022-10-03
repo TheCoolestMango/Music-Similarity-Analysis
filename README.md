@@ -19,4 +19,4 @@ A python script ```sound-to-spec.py``` performs preprocessing:
  * All sample tracks are converted to mel-spectrograms
  * Added to the .json file, sorted by genres and labeled by genre-index
   
-Created dataset was uploaded to GoogleDrive
+Created dataset was uploaded to GoogleDrive: https://drive.google.com/drive/folders/1JFRL-0wX8s20UJdJ98LvnZHj1ftAQd-l
