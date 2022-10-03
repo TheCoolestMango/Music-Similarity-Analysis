@@ -13,3 +13,10 @@ The algorithm will recommend a playlist based on a list of user's liked tracks u
 The algorithm requires a data-set of different music compositions of different genres, pace and artists.
 ### Expectation
 The implemented model should be capable of finding tracks similar to a couple of liked tracks.
+
+## Preprocessing
+A python script ```sound-to-spec.py``` performs preprocessing:
+ * All sample tracks are converted to mel-spectrograms
+ * Added to the .json file, sorted by genres and labeled by genre-index
+  
+Created dataset was uploaded to GoogleDrive
