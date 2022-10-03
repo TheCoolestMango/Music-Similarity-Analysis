@@ -18,8 +18,6 @@ def create_melspect(genre_and_filename, n_mfcc=13, n_fft = 2048, hop_length = 51
     mfccs = []
 
     reference_path = 'Data/genres_original' + genre_and_filename
-    #save_path = 'Data/spectrograms' + genre_and_filename[:-3]+'png'
-    #print(save_path)
     signal, sr = librosa.load(reference_path, sr=SAMPLE_RATE)
 
     samples_per_seg = int(SAMPLES_PER_TRACK / N_SEGMENTS)
@@ -66,9 +64,7 @@ for j in range(len(genres)):
     genre = genres[j]
     mel_specs['mapping'].append(genre)
     print('\n' + genre + ' started')
-    #print('------------------------')
     for i in range(len(filepaths[genre])):
-        #print('Started creating ' + filepaths[genre][i] + ' spectrogram | ' + str(i))
         genre_and_name = '/' + genre + '/' + filepaths[genre][i]
         mel_specs['mfcc'].append(create_melspect(genre_and_name))
         mel_specs['labels'].append(j)
