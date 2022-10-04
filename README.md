@@ -37,5 +37,5 @@ The dataset ```mel_specs.json``` is a dictionary generated using python script `
   * mapping: list of 10 genres
   * labels: contains index (in the mapping) of the MFCC's corresponding genre
   
- Using the dataset ```mel_specs.json``` track's feature vector can be extracted using a CNN
+ Using the dataset ```mel_specs.json``` track's feature vector can be extracted using a CNN\
 Created dataset was uploaded to [GoogleDrive](https://drive.google.com/drive/folders/1JFRL-0wX8s20UJdJ98LvnZHj1ftAQd-l)
