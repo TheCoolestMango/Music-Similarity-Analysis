@@ -32,7 +32,7 @@ A python script ```sound-to-spec.py``` performs preprocessing:
 
 Required data (1000 tracks of different genres) can be found and downloaded from [here](https://drive.google.com/drive/folders/15l6HypCKKLkd7Kl9SQzOHt90uZ0J01Y9?usp=sharing)\
 \
-The dataset ```mel_specs.json``` is a dictionary with following key values:
+The dataset ```mel_specs.json``` is a dictionary generated using python script ```sound-to-spec.py``` with following key values:
   * mfccs: contains list of all segmented 1000 tracks converted to MFCCs
   * mapping: list of 10 genres
   * labels: contains index (in the mapping) of the MFCC's corresponding genre
