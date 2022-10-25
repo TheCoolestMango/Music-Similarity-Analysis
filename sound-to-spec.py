@@ -1,5 +1,7 @@
 import librosa, librosa.display
 import numpy as np
+import matplotlib.pyplot as plt
+#%matplotlib inline
 import os, glob
 import json
 import math
@@ -11,11 +13,15 @@ DURATION = 30 #sec
 SAMPLES_PER_TRACK = SAMPLE_RATE * DURATION
 
 # Function to create a mel-spectrogram of a track located at filepath
-def create_melspect(genre_and_filename, n_mfcc=13, n_fft = 2048, hop_length = 512):
+def create_melspect(filename, n_mfcc=13, n_fft = 2048, hop_length = 512):
     # store created mfccs for all segments
     mfccs = []
 
+    genre_and_filename = '/' + genre + '/' +  filename
+
     reference_path = 'Data/genres_original' + genre_and_filename
+    #save_path = 'Data/spectrograms' + genre_and_filename[:-3]+'png'
+    #print(save_path)
     signal, sr = librosa.load(reference_path, sr=SAMPLE_RATE)
 
     samples_per_seg = int(SAMPLES_PER_TRACK / N_SEGMENTS)
@@ -23,6 +29,7 @@ def create_melspect(genre_and_filename, n_mfcc=13, n_fft = 2048, hop_length = 51
 
     # Process segments extracting mfccs
     for seg in range(N_SEGMENTS):
+        segment_info = [[filename]]
         start_sample = samples_per_seg * seg
         end_sample = start_sample + samples_per_seg
 
@@ -32,9 +39,9 @@ def create_melspect(genre_and_filename, n_mfcc=13, n_fft = 2048, hop_length = 51
 
         # check if num_samples is as expected
         if len(mfcc) == expected_n_vec:
-            mfccs.append(mfcc.tolist())
+            segment_info.append(mfcc.tolist())
+            mfccs.append(segment_info)
 
-    #print(np.array(mfccs).shape)
     return mfccs
 
 
@@ -62,9 +69,9 @@ for j in range(len(genres)):
     genre = genres[j]
     mel_specs['mapping'].append(genre)
     print('\n' + genre + ' started')
+
     for i in range(len(filepaths[genre])):
-        genre_and_name = '/' + genre + '/' + filepaths[genre][i]
-        mel_specs['mfcc'].append(create_melspect(genre_and_name))
+        mel_specs['mfcc'].append(create_melspect(filepaths[genre][i]))
         mel_specs['labels'].append(j)
 
 # save mel_specs as .json file
