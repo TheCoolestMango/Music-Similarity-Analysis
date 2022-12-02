@@ -1,9 +1,7 @@
 #importing libraries 
-from tensorflow.keras import backend as K
 import os
 from tkinter import *
 from tkinter.ttk import *
-from tkinter import filedialog
 from pygame import mixer
 import time
 
@@ -21,35 +19,27 @@ root.resizable(False, False)
 mixer.init()
 
 # list of covers' paths
-album_paths = [
-       DEFAULT_PATH+'/images/blues.png',
-       DEFAULT_PATH+'/images/classical.png',
-       DEFAULT_PATH+'/images/country.png',
-       DEFAULT_PATH+'/images/disco.png',
-       DEFAULT_PATH+'/images/hiphop.png',
-       DEFAULT_PATH+'/images/jazz.png',
-       DEFAULT_PATH+'/images/metal.png',
-       DEFAULT_PATH+'/images/pop.png',
-       DEFAULT_PATH+'/images/reggae.png',
-       DEFAULT_PATH+'/images/rock.png'
-]
+album_paths = {
+       'blues': DEFAULT_PATH+'/images/blues.png',
+       'classical': DEFAULT_PATH+'/images/classical.png',
+       'country': DEFAULT_PATH+'/images/country.png',
+       'disco': DEFAULT_PATH+'/images/disco.png',
+       'hiphop': DEFAULT_PATH+'/images/hiphop.png',
+       'jazz': DEFAULT_PATH+'/images/jazz.png',
+       'metal': DEFAULT_PATH+'/images/metal.png',
+       'pop': DEFAULT_PATH+'/images/pop.png',
+       'reggae': DEFAULT_PATH+'/images/reggae.png',
+       'rock': DEFAULT_PATH+'/images/rock.png'
+}
 
 font = ('Ubuntu',10)
 last_song = '' # last played song
 paused = False # if the current song is paused
 
+# Function to change album cover
 def change_album_logo(curr_genre):
        Label(root, image=album_covers[curr_genre], background="#0f1a2b").place(x=45, y=140)
 
-# Add songs to the list
-def AddMusic():
-       path = filedialog.askdirectory()
-       print(path)
-       if path:
-              songs = os.listdir(path)
-              for song in songs:
-                     if song.endswith(".wav"):
-                            Playlist.insert(END, song)
 
 def time_update():
        # Display song position
@@ -145,7 +135,7 @@ def PlayNext():
 
        change_album_logo(curr_genre)
 
-
+# Play the previous song
 def PlayPrev():
        global last_song, paused
        # Get the index of selected song
@@ -241,6 +231,7 @@ ButtonNext = Button(Frame_buttons, image=ButtonNext_Image,
                        command=PlayNext)
 ButtonNext.grid(row=0, column=2,pady=5,padx=3)
 
+
 label_recommend = Label(text='Click on Rock\nif you want recommendations', font=font)
 label_recommend.place(x=550, y=350)
 ButtonRecommend = PhotoImage(file=DEFAULT_PATH+"/images/menu.png")
@@ -255,9 +246,6 @@ slider.place(x=45, y=340)
 song_pos = Label(Frame_buttons,text='00:00', font=font)
 song_pos.grid(row = 1, column=1)
 
-# Label 
-# Menu = PhotoImage(file="images/menu.png")
-# Label(root, image=Menu).pack(padx=10, pady=50, side=RIGHT)
 
 Frame_Music = Frame(root, relief=RIDGE)
 Frame_Music.place(x=330, y=350, width=180, height=250)
@@ -279,9 +267,7 @@ genre_choice['state'] = 'readonly'
 genre_choice.bind('<<ComboboxSelected>>', ChangeGenre)
 
 # album dictionary genre: album-cover
-album_covers = {}
-for i,genre in enumerate(genres):
-       album_covers[genre] = PhotoImage(file=album_paths[i], width=202, height=202)
+album_covers = {genre:PhotoImage(file=album_paths[genre], width=200, height=200) for genre in genres}
 
 Scroll = Scrollbar(Frame_Music)
 Playlist = Listbox(Frame_Music, width=100, font=font, background="#333333", fg="grey", selectbackground="lightblue", cursor="hand2", bd=0, yscrollcommand=Scroll.set)
