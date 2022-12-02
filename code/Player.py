@@ -1,25 +1,70 @@
 #importing libraries 
-
+from tensorflow.keras import backend as K
 import os
 from tkinter import *
-import tkinter as tk
 from tkinter.ttk import *
 from tkinter import filedialog
 from pygame import mixer
+import time
+
 import Recommendation
 
-DEFAULT_PATH = "C:/Users/bugue/Desktop/DL/Project"
+DEFAULT_PATH = "/home/liza/Study/pmldl/Project"
+print(DEFAULT_PATH)
 
 # Create a GUI window
 root = Tk()
 root.title("Music Player")
-root.geometry("920x600+200+85")
+root.geometry("720x600+290+85")
 root.configure(background='#212121')
 root.resizable(False, False)
 mixer.init()
 
+# list of covers' paths
+album_paths = [
+       DEFAULT_PATH+'/images/blues.png',
+       DEFAULT_PATH+'/images/classical.png',
+       DEFAULT_PATH+'/images/country.png',
+       DEFAULT_PATH+'/images/disco.png',
+       DEFAULT_PATH+'/images/hiphop.png',
+       DEFAULT_PATH+'/images/jazz.png',
+       DEFAULT_PATH+'/images/metal.png',
+       DEFAULT_PATH+'/images/pop.png',
+       DEFAULT_PATH+'/images/reggae.png',
+       DEFAULT_PATH+'/images/rock.png'
+]
+
+font = ('Ubuntu',10)
 last_song = '' # last played song
 paused = False # if the current song is paused
+
+def change_album_logo(curr_genre):
+       Label(root, image=album_covers[curr_genre], background="#0f1a2b").place(x=45, y=140)
+
+# Add songs to the list
+def AddMusic():
+       path = filedialog.askdirectory()
+       print(path)
+       if path:
+              songs = os.listdir(path)
+              for song in songs:
+                     if song.endswith(".wav"):
+                            Playlist.insert(END, song)
+
+def time_update():
+       # Display song position
+       current_time = mixer.music.get_pos()/1000
+       # MM:SS format
+       conv_time = time.strftime('%M:%S', time.gmtime(current_time))
+
+       song_pos.config(text=conv_time)
+       # костыль, чтобы избежать 59:59
+       if song_pos['text'] == '59:59':
+              song_pos.config(text='00:00')
+       # update slider
+       slider.config(to=30, value=current_time)
+
+       song_pos.after(1000, time_update)
 
 # Play song when button is pressed
 def PlayMusic(is_paused, last_played):
@@ -28,11 +73,13 @@ def PlayMusic(is_paused, last_played):
        last_song = last_played
        # Get the name of the selected song
        Music_Name = Playlist.get(ACTIVE)
+       # genre name
+       curr_genre = Music_Name[:-10]
        # If no song was selected, then select the first automatically
        if Playlist.curselection() == ():
               Playlist.selection_set((0,), last=None)
        # Get the directory of the selected song
-       Music_Name = DEFAULT_PATH + '/Data/genres_original/' + Music_Name[:-10] + '/' + Music_Name
+       Music_Name = DEFAULT_PATH + '/Data/genres_original/' + curr_genre + '/' + Music_Name
        # If the last played song is different from the selected, then we need to load the song from folder
        if last_song != Music_Name:
               # Load the song
@@ -60,6 +107,12 @@ def PlayMusic(is_paused, last_played):
                      # Change the button to Play image
                      ButtonPlay.configure(image=ButtonPlay_Image)
 
+       # change album logo
+       change_album_logo(curr_genre)
+
+       time_update()
+
+
 # Play the next song
 def PlayNext():
        global last_song, paused
@@ -69,9 +122,11 @@ def PlayNext():
        next_song = next_song[0] + 1
        # Get the name of the next song
        Music_Name = Playlist.get(next_song)
+       # genre name
+       curr_genre = Music_Name[:-10]
        # Get directory of the selected song
        Music_Name = DEFAULT_PATH + '/Data/genres_original/' + \
-           Music_Name[:-10] + '/' + Music_Name
+           curr_genre + '/' + Music_Name
        # Load and play the next song
        mixer.music.load(Music_Name)
        mixer.music.play()
@@ -88,6 +143,8 @@ def PlayNext():
        Playlist.activate(next_song)
        Playlist.selection_set(next_song, last=None)
 
+       change_album_logo(curr_genre)
+
 
 def PlayPrev():
        global last_song, paused
@@ -97,9 +154,11 @@ def PlayPrev():
        prev_song = prev_song[0] - 1
        # Get the name of the previous song
        Music_Name = Playlist.get(prev_song)
+       # genre name
+       curr_genre = Music_Name[:-10]
        # Get directory of the selected song
        Music_Name = DEFAULT_PATH + '/Data/genres_original/' + \
-              Music_Name[:-10] + '/' + Music_Name
+              curr_genre + '/' + Music_Name
        # Load and play the previous song
        mixer.music.load(Music_Name)
        mixer.music.play()
@@ -116,11 +175,18 @@ def PlayPrev():
        Playlist.activate(prev_song)
        Playlist.selection_set(prev_song, last=None)
 
+       change_album_logo(curr_genre)
+
+
 # Update current genre on genre change
 def ChangeGenre(event):
+       # get the genre string from the choice box
        curr_genre = selected_genre.get()
+       # empty list
        Playlist.delete(0, END)
+       # append it to path
        path = DEFAULT_PATH + '/Data/genres_original/' + curr_genre
+       # open all files from genre folder
        if path:
               songs = os.listdir(path)
 
@@ -130,25 +196,22 @@ def ChangeGenre(event):
 
 # Create Recommendation list
 def RecommendMusic():
-       # Get the name of the selected song
        Music_Name = Playlist.get(ACTIVE)
-       # Clear the playlist
        Playlist.delete(0, END)
-       # Get the list of recommended songs
        Recommended_list = Recommendation.recommendation_list(Music_Name)
-       # Add each song to the playlist
+
        for song in Recommended_list:
               if song.endswith(".wav"):
                    Playlist.insert(END, song)
 
 
-
+image_path = '/home/liza/Study/pmldl/Project/images'
 # icon
-image_icon = PhotoImage(file="images/icon3.png")
+image_icon = PhotoImage(file=DEFAULT_PATH+"/images/icon3.png")
 root.iconphoto(False, image_icon)
 
 # Background image
-Background = PhotoImage(file="images/top_image.png")
+Background = PhotoImage(file=DEFAULT_PATH+"/images/top_image.png")
 Label(root, image=Background, background="#0f1a2b").pack()
 
 # logo
@@ -163,50 +226,77 @@ Frame_buttons.place(x=45, y=350)
 ButtonPlay_Image = PhotoImage(file=DEFAULT_PATH+"/images/play.png")
 ButtonPause_Image = PhotoImage(file=DEFAULT_PATH+"/images/pause.png")
 
-ButtonPlay = tk.Button(Frame_buttons, image=ButtonPlay_Image,
+ButtonPlay = Button(Frame_buttons, image=ButtonPlay_Image,
        command=lambda: PlayMusic(paused, last_song))
-ButtonPlay.grid(row=0, column=1, pady=5, padx=5)
+ButtonPlay.grid(row=0, column=1,pady=5,padx=3)
 
 ButtonPrev_Image = PhotoImage(file=DEFAULT_PATH+"/images/prev.png")
 ButtonNext_Image = PhotoImage(file=DEFAULT_PATH+"/images/next.png")
 
-ButtonPrev = tk.Button(Frame_buttons, image=ButtonPrev_Image,
+ButtonPrev = Button(Frame_buttons, image=ButtonPrev_Image,
                        command=PlayPrev)
-ButtonPrev.grid(row=0, column=0, pady=5, padx=5)
+ButtonPrev.grid(row=0, column=0,pady=5,padx=3)
 
-ButtonNext = tk.Button(Frame_buttons, image=ButtonNext_Image,
+ButtonNext = Button(Frame_buttons, image=ButtonNext_Image,
                        command=PlayNext)
-ButtonNext.grid(row=0, column=2, pady=5, padx=5)
+ButtonNext.grid(row=0, column=2,pady=5,padx=3)
 
-
-label_recommend = Label(text='Click on Rock\nif you want recommendations')
+label_recommend = Label(text='Click on Rock\nif you want recommendations', font=font)
 label_recommend.place(x=550, y=350)
 ButtonRecommend = PhotoImage(file=DEFAULT_PATH+"/images/menu.png")
 Button(root, image=ButtonRecommend,
        command=RecommendMusic).place(x=550, y=390)
 
+# Music Slider
+slider = Scale(root, from_=0, to=100, orient=HORIZONTAL, value=0, length=201)
+slider.place(x=45, y=340)
+
+# Current song position display
+song_pos = Label(Frame_buttons,text='00:00', font=font)
+song_pos.grid(row = 1, column=1)
+
+# Label 
+# Menu = PhotoImage(file="images/menu.png")
+# Label(root, image=Menu).pack(padx=10, pady=50, side=RIGHT)
+
 Frame_Music = Frame(root, relief=RIDGE)
 Frame_Music.place(x=330, y=350, width=180, height=250)
 
 # Label for genre choice
-label_genre = Label(text='Select genre:')
-label_genre.place(x=330, y=280)
+label_genre = Label(text='Select genre:', font=font)
+label_genre.place(x=331, y=280)
 
 # genre choice
 genres = ['blues', 'country', 'classical', 'disco', 'hiphop', 'jazz', 'metal', 'pop', 'reggae', 'rock']
 selected_genre = StringVar(root)
+# The box with list of all genres
 genre_choice = Combobox(root, values=genres, textvariable=selected_genre)
 genre_choice.place(x=330, y=300)
-# prevent typing a value
+# prevent typing a value in the list
 genre_choice['state'] = 'readonly'
 
+# launch ChangeGenre on change
 genre_choice.bind('<<ComboboxSelected>>', ChangeGenre)
 
+# album dictionary genre: album-cover
+album_covers = {}
+for i,genre in enumerate(genres):
+       album_covers[genre] = PhotoImage(file=album_paths[i], width=202, height=202)
+
 Scroll = Scrollbar(Frame_Music)
-Playlist = Listbox(Frame_Music, width=100, font=("Times new roman", 10), background="#333333", fg="grey", selectbackground="lightblue", cursor="hand2", bd=0, yscrollcommand=Scroll.set)
+Playlist = Listbox(Frame_Music, width=100, font=font, background="#333333", fg="grey", selectbackground="lightblue", cursor="hand2", bd=0, yscrollcommand=Scroll.set)
 Scroll.config(command=Playlist.yview)
 Scroll.pack(side=RIGHT, fill=Y)
 Playlist.pack(side=LEFT, fill=BOTH)
+
+# insert first playlist
+path = DEFAULT_PATH + '/Data/genres_original/' + 'rock'
+# open all files from genre folder
+if path:
+       songs = os.listdir(path)
+for song in songs:
+       if song.endswith(".wav"):
+              Playlist.insert(END, song)
 
 # Execute Tkinter
 
