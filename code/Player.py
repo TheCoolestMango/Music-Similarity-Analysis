@@ -1,19 +1,21 @@
 #importing libraries 
 import os
+import tkinter as tk
 from tkinter import *
 from tkinter.ttk import *
 from pygame import mixer
 import time
+from tensorflow.keras import backend as K
 
 import Recommendation
 
-DEFAULT_PATH = "/home/liza/Study/pmldl/Project"
+DEFAULT_PATH = "C:/Users/bugue/Desktop/DL/Project"
 print(DEFAULT_PATH)
 
 # Create a GUI window
 root = Tk()
 root.title("Music Player")
-root.geometry("720x600+290+85")
+root.geometry("750x600+290+85")
 root.configure(background='#212121')
 root.resizable(False, False)
 mixer.init()
@@ -36,9 +38,16 @@ font = ('Ubuntu',10)
 last_song = '' # last played song
 paused = False # if the current song is paused
 
+def AddSongs(path):
+       if path:
+              songs = os.listdir(path)
+       for song in songs:
+              if song.endswith(".wav"):
+                     Playlist.insert(END, song)
+
 # Function to change album cover
 def change_album_logo(curr_genre):
-       Label(root, image=album_covers[curr_genre], background="#0f1a2b").place(x=45, y=140)
+       Label(root, image=album_covers[curr_genre], background="#FFFFFF").place(x=45, y=140)
 
 
 def time_update():
@@ -75,7 +84,7 @@ def PlayMusic(is_paused, last_played):
               # Load the song
               mixer.music.load(Music_Name)
               # Starts playing
-              mixer.music.play()
+              mixer.music.play(loops=10)
               # Update the name of the last song
               last_song = Music_Name
               # Change the button to Pause image
@@ -205,12 +214,13 @@ Background = PhotoImage(file=DEFAULT_PATH+"/images/top_image.png")
 Label(root, image=Background, background="#0f1a2b").pack()
 
 # logo
-logo = PhotoImage(file=DEFAULT_PATH+"/images/logo.png")
-Label(root, image=logo, background="#0f1a2b").place(x=45, y=140)
+logo_img = PhotoImage(file=DEFAULT_PATH+"/images/logo.png")
+Label(root, image=logo_img, background="#000000").place(x=45, y=140)
 
 # background for buttons
-Frame_buttons = Frame(root, relief=RIDGE)
-Frame_buttons.place(x=45, y=350)
+Frame_buttons = Frame(root, relief=RIDGE, width=204)
+Frame_buttons.pack()
+Frame_buttons.place(x=45, y=370)
 
 # Buttons
 ButtonPlay_Image = PhotoImage(file=DEFAULT_PATH+"/images/play.png")
@@ -218,7 +228,7 @@ ButtonPause_Image = PhotoImage(file=DEFAULT_PATH+"/images/pause.png")
 
 ButtonPlay = Button(Frame_buttons, image=ButtonPlay_Image,
        command=lambda: PlayMusic(paused, last_song))
-ButtonPlay.grid(row=0, column=1,pady=5,padx=3)
+ButtonPlay.grid(row=0, column=1,pady=5,padx=7)
 
 ButtonPrev_Image = PhotoImage(file=DEFAULT_PATH+"/images/prev.png")
 ButtonNext_Image = PhotoImage(file=DEFAULT_PATH+"/images/next.png")
@@ -239,8 +249,8 @@ Button(root, image=ButtonRecommend,
        command=RecommendMusic).place(x=550, y=390)
 
 # Music Slider
-slider = Scale(root, from_=0, to=100, orient=HORIZONTAL, value=0, length=201)
-slider.place(x=45, y=340)
+slider = Scale(root, from_=0, to=100, orient=HORIZONTAL, value=0, length=204)
+slider.place(x=45, y=345)
 
 # Current song position display
 song_pos = Label(Frame_buttons,text='00:00', font=font)
@@ -276,13 +286,8 @@ Scroll.pack(side=RIGHT, fill=Y)
 Playlist.pack(side=LEFT, fill=BOTH)
 
 # insert first playlist
-path = DEFAULT_PATH + '/Data/genres_original/' + 'rock'
 # open all files from genre folder
-if path:
-       songs = os.listdir(path)
-for song in songs:
-       if song.endswith(".wav"):
-              Playlist.insert(END, song)
+AddSongs(path=DEFAULT_PATH + '/Data/genres_original/' + 'rock')
 
 # Execute Tkinter
 
